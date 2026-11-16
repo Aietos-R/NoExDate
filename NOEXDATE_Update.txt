@@ -1,0 +1,594 @@
+NOEXDATE — UPDATE TAMBAHAN REQUIREMENTS
+Android Native | Kotlin | Jetpack Compose | Android Studio
+
+TUJUAN DOKUMEN
+Dokumen ini hanya berisi update/tambahan untuk README NOEXDATE yang sudah ada. Gunakan bersama
+README utama, bukan sebagai pengganti seluruh spesifikasi sebelumnya.
+
+INSTRUKSI UNTUK AI CODING ASSISTANT
+Periksa project Android Studio dan README utama terlebih dahulu. Implementasikan perubahan di bawah
+ini saja, dengan tetap mengikuti arsitektur, gaya UI, teknologi, serta fitur yang sudah ada. Jangan
+membuat ulang project dari nol, jangan menghapus fitur lama, dan jangan mengubah stack teknologi.
+Gunakan Kotlin, Jetpack Compose, Material 3, ViewModel, Repository, Room, serta dependency yang
+sudah dipakai project bila memungkinkan. Implementasikan fitur yang benar-benar berfungsi, bukan
+sekadar mockup.
+
+============================================================
+UPDATE 1 — DEFAULT SCREEN DAN NAVIGASI KALENDER (KOREKSI)
+============================================================
+
+PENTING: Halaman default saat aplikasi dibuka tetap HOME / BERANDA, bukan Calendar.
+
+Ada dua pengaturan berbeda yang tidak boleh tertukar:
+
+A. Default aplikasi:
+- Saat aplikasi dibuka, tampilkan Home / Beranda seperti rancangan utama.
+- Jangan mengubah halaman awal aplikasi menjadi Calendar.
+- Pertahankan navigasi utama yang sudah ditentukan di README utama.
+
+B. Default di dalam halaman Notes:
+- Ketika pengguna memilih menu Notes / Catatan, tampilan awal modul Notes adalah subhalaman
+  Calendar terlebih dahulu.
+- Sediakan pemilih tampilan yang jelas, misalnya tab/segmented control "Calendar" dan "List".
+- Calendar adalah tampilan awal di dalam modul Notes; List menampilkan daftar catatan biasa.
+- Ingat pilihan pengguna hanya jika hal tersebut tidak menimbulkan kebingungan; default awal modul
+  Notes tetap Calendar.
+- Kalender di dalam modul Notes berfokus pada item catatan yang memang dijadwalkan, seperti Task,
+  Deadline, Reminder, atau Event yang mengaktifkan "Show on Calendar".
+- Catatan bertipe "Note Only" tidak boleh muncul di kalender secara otomatis.
+- Reminder tidak harus muncul di kalender: kontrol "Enable Reminder" dan "Show on Calendar" harus
+  terpisah dan independen.
+
+Navigasi kalender:
+1. Sediakan panah Previous Month dan Next Month.
+2. Tampilkan header bulan dan tahun, misalnya "October 2026".
+3. Saat header bulan/tahun ditekan, tampilkan pemilih bulan dan tahun untuk pindah langsung ke
+   bulan/tahun tertentu tanpa menekan panah berkali-kali.
+4. Dukung bulan dan tahun sebelum atau sesudah periode sekarang selama dapat direpresentasikan oleh
+   kalender.
+5. Sediakan tombol "Today" untuk kembali ke tanggal sekarang.
+6. Saat bulan/tahun diganti, perbarui tanggal terlihat dan item yang tampil berdasarkan rentang itu.
+7. Navigasi bulan/tahun tidak boleh mengubah, memindahkan, atau menghapus data.
+8. Pertahankan tampilan Month, Week, Day, dan Agenda bila sudah ada di project/README utama.
+9. Kalender internal NOEXDATE tidak otomatis membaca atau menyinkronkan Google Calendar pengguna.
+   Integrasi Google Calendar eksternal adalah fitur terpisah yang membutuhkan implementasi dan izin.
+
+Acceptance criteria:
+- App launch menampilkan Home / Beranda.
+- Membuka menu Notes menampilkan subhalaman Calendar sebagai tampilan awal.
+- Pengguna dapat beralih antara Calendar dan List di dalam Notes.
+- Pengguna dapat menavigasi bulan/tahun, memilih langsung bulan/tahun tertentu, dan kembali ke Today.
+- Calendar hanya menampilkan catatan bertanggal yang mengaktifkan "Show on Calendar" serta event
+  atau item relevan lainnya sesuai README utama.
+
+============================================================
+UPDATE 2 — LABEL DAN JENIS CATATAN
+============================================================
+
+Tambahkan pilihan tipe/label saat membuat atau mengedit catatan. Tujuannya membedakan catatan biasa
+dari hal yang perlu dijadwalkan atau diingatkan.
+
+Sediakan pilihan awal berikut:
+- Note Only / Catatan Biasa
+- Task / Tugas
+- Deadline
+- Event / Acara
+- Reminder / Pengingat
+- Personal / Pribadi
+- Work / Pekerjaan
+- Other / Lainnya
+
+Ketentuan:
+1. Pengguna dapat memilih satu tipe utama dan menambahkan tag tambahan bila diperlukan.
+2. Tipe utama dan tag harus dapat diedit setelah catatan disimpan.
+3. Sediakan pilihan tipe dengan UI yang jelas, misalnya dropdown, segmented control, atau chips
+   sesuai ruang layar.
+4. Tipe "Note Only / Catatan Biasa" tidak muncul sebagai item kalender dan tidak menjadwalkan
+   notifikasi secara otomatis.
+5. Catatan biasa tetap mempunyai createdAt dan updatedAt. Pengguna harus dapat mencari dan memfilter
+   catatan berdasarkan tanggal dibuat atau tanggal diperbarui.
+6. Tipe Task, Deadline, Event, atau Reminder boleh ditampilkan di kalender jika pengguna
+   mengaktifkan opsi "Show on Calendar / Tampilkan di Kalender" dan mengisi tanggal atau jadwal yang
+   diperlukan.
+7. Jangan menampilkan semua catatan secara otomatis di kalender.
+8. Sediakan toggle terpisah "Show on Calendar / Tampilkan di Kalender" dan "Enable Reminder /
+   Aktifkan Pengingat".
+9. Mengaktifkan reminder tidak boleh otomatis mengaktifkan notifikasi kategori yang dinonaktifkan di
+   Settings. Ikuti seluruh kebijakan notifikasi global dan kategori dari README utama.
+10. Jika sebuah catatan hanya berupa Note Only, pengguna tetap dapat mengaktifkan reminder secara
+manual bila memang sesuai kebutuhan, tetapi catatan tersebut tidak boleh masuk ke kalender kecuali
+"Show on Calendar" juga diaktifkan.
+11. Jika pengguna mengaktifkan kalender atau reminder, tampilkan pilihan tanggal/waktu yang
+diperlukan. Validasi input sebelum menyimpan.
+
+Konfigurasi pengingat:
+- Pada waktu yang ditentukan
+- 1 hari sebelumnya
+- 3 hari sebelumnya
+- 1 minggu sebelumnya
+- 2 minggu sebelumnya
+- 1 bulan sebelumnya
+- Custom date/time atau pilihan jumlah hari sebelum deadline
+- Lebih dari satu pengingat bila pengguna memilihnya secara eksplisit dan fitur mendukungnya
+
+Catatan implementasi:
+- Gunakan field tipe/label dan flag kalender/pengingat yang tersimpan dalam data model note.
+- Contoh field yang dapat disesuaikan dengan model project saat ini: noteType, tags, showOnCalendar,
+  reminderEnabled, deadlineAt, reminderConfiguration, createdAt, updatedAt.
+- Jangan menyimpan duplicate copy dari catatan di tabel event. Kalender mengambil referensi note ID
+  untuk item yang berasal dari catatan.
+- Saat tanggal, tipe, atau pengaturan reminder berubah, perbarui item kalender dan jadwal pengingat
+  yang terkait.
+- Saat catatan dihapus, batalkan reminder terjadwal dan hapus referensi kalender terkait dengan
+  aman.
+
+============================================================
+UPDATE 3 — MULTI-SELECT DAN BULK ACTION
+============================================================
+
+Tambahkan mode pemilihan banyak item (multi-select / selection mode) setidaknya pada:
+- Notes
+- Pantry
+- Expenses
+
+Perilaku yang diharapkan:
+1. Pengguna dapat menekan lama satu item atau menekan tombol "Select" untuk masuk ke selection mode.
+2. Setiap item menampilkan checkbox/indikator terpilih saat selection mode aktif.
+3. Pengguna bisa memilih dan membatalkan pilihan beberapa item.
+4. Tampilkan jumlah item yang terpilih, misalnya "3 selected".
+5. Sediakan aksi "Select All" untuk item dalam daftar atau hasil filter yang sedang ditampilkan,
+   dengan perilaku yang jelas.
+6. Sediakan aksi "Cancel" atau "Clear Selection" untuk keluar atau membatalkan pilihan.
+7. Sediakan aksi bulk delete untuk menghapus beberapa item sekaligus.
+8. Sebelum bulk delete, tampilkan dialog konfirmasi dengan jumlah item yang akan dihapus.
+9. Jika memungkinkan dan konsisten dengan desain aplikasi, sediakan bulk archive untuk Notes dan
+   bulk status update yang relevan pada Pantry. Namun, bulk delete adalah kebutuhan wajib.
+10. Jangan menghapus item yang tidak dipilih.
+11. Jika item sudah dihapus atau tidak lagi tersedia, tangani dengan aman dan perbarui jumlah
+selection.
+12. Bulk action harus memperbarui database lokal dan sinkronisasi Firebase jika digunakan.
+13. Saat item dihapus, batalkan reminder terjadwal dan bersihkan referensi kalender atau file
+lampiran yang terkait sesuai aturan data yang berlaku.
+14. Berikan feedback berhasil/gagal dan hindari UI yang menganggap penghapusan berhasil apabila
+database gagal memperbarui.
+15. Bulk delete harus tetap mengikuti aturan kepemilikan data dan tidak dapat menghapus data milik
+pengguna lain.
+
+Acceptance criteria:
+- Bisa memilih beberapa note, pantry item, dan expense.
+- Bisa menghapus hanya item yang dipilih setelah konfirmasi.
+- Jumlah terpilih dan tampilan daftar selalu konsisten.
+- Reminder dan referensi terkait tidak tertinggal setelah item terkait dihapus.
+
+============================================================
+UPDATE 4 — HOME DASHBOARD: GRAFIK PENGELUARAN DAN PANTRY
+============================================================
+
+Perbarui urutan konten di Home Dashboard. Pertahankan circular/donut graph pengeluaran yang sudah
+direncanakan, lalu tambahkan dua bagian berikut di bawahnya.
+
+A. Monthly Expense Bar Chart
+- Tampilkan bar chart pengeluaran per bulan setelah circular/donut chart.
+- Tampilkan total pengeluaran setiap bulan untuk rentang beberapa bulan terakhir, misalnya 6 bulan,
+  dengan label bulan yang mudah dibaca.
+- Bila memungkinkan, izinkan pengguna memilih rentang waktu, misalnya 6 bulan atau 12 bulan.
+- Ambil data dari expense records yang benar-benar tersimpan; jangan gunakan data dummy di
+  production.
+- Hitung total berdasarkan tanggal transaksi yang masuk ke setiap bulan.
+- Format angka berdasarkan locale dan currency preference pengguna.
+- Berikan empty state jika belum ada transaksi.
+- Gunakan library chart Android/Compose yang sesuai dengan project dan versi Android.
+- Grafik harus tetap terbaca pada Light dan Dark theme serta ukuran layar berbeda.
+
+B. Pantry Items Expiring Soon
+- Tempatkan bagian Pantry Expiring Soon di bawah bar chart.
+- Tampilkan makanan yang mendekati tanggal kedaluwarsa, misalnya dalam 7 hari ke depan sebagai
+  rentang default yang dapat disesuaikan bila aplikasi mendukungnya.
+- Setiap item sekurang-kurangnya menunjukkan nama makanan, foto thumbnail bila tersedia, tanggal
+  kedaluwarsa, dan sisa waktu seperti "Expires in 2 days".
+- Prioritaskan item yang tanggal kedaluwarsanya paling dekat.
+- Beri penanda jelas untuk item yang sudah kedaluwarsa, tetapi jangan menyebut item yang kedaluwarsa
+  sebagai "akan kedaluwarsa".
+- Jangan tampilkan item berstatus consumed, discarded, atau item yang sudah tidak dilacak.
+- Sediakan tombol/link untuk membuka Pantry dan melihat semua item.
+- Saat item ditekan, buka detail item Pantry terkait.
+- Jika tidak ada item yang mendekati kedaluwarsa, tampilkan empty state yang ramah.
+- Jangan menghasilkan notifikasi baru hanya karena item ditampilkan di dashboard. Notifikasi tetap
+  mengikuti preference yang telah dipilih pengguna.
+
+Urutan Home Dashboard yang diminta:
+1. Ringkasan/dashboard cards yang sudah ada.
+2. Circular/donut expense chart yang sudah ada.
+3. Monthly expense bar chart.
+4. Pantry items expiring soon.
+5. Konten dashboard lain yang sudah ada dapat dipertahankan, tanpa menghilangkan fitur sebelumnya.
+
+============================================================
+UPDATE 5 — HORIZONTAL SCROLLABLE FILTER CHIPS
+============================================================
+
+Terapkan Horizontal Scrollable Filter Chips pada dua halaman:
+- Notes
+- Pantry
+
+Perilaku visual dan interaksi:
+1. Tampilkan kategori sebagai deretan chips horizontal dalam satu baris.
+2. Gunakan horizontal scrolling sehingga pengguna dapat menggeser ke kiri/kanan untuk melihat
+   seluruh kategori.
+3. Jangan membungkus chips ke baris kedua. Jangan gunakan layout yang membuat kategori berpindah ke
+   baris berikutnya.
+4. Gunakan sudut membulat dengan padding dan jarak antarchip yang konsisten.
+5. Chip terpilih harus mempunyai warna background yang berbeda dengan chip tidak terpilih.
+6. Terapkan single selection: hanya satu filter kategori aktif pada satu waktu.
+7. Sediakan kategori "All / Semua" sebagai filter default.
+8. Saat kategori dipilih, daftar item langsung difilter berdasarkan kategori tersebut.
+9. Pertahankan posisi scroll kategori selama memungkinkan ketika daftar diperbarui.
+10. Filter tidak boleh mengubah atau menghapus data; filter hanya menentukan item yang ditampilkan.
+11. Pastikan komponen tetap usable pada layar kecil, Light/Dark theme, serta dengan label bahasa
+Indonesia atau Inggris yang lebih panjang.
+12. Gunakan komponen reusable agar gaya dan perilaku filter Notes dan Pantry konsisten.
+
+Kategori Notes:
+- All / Semua
+- Note Only / Catatan Biasa
+- Task / Tugas
+- Deadline
+- Event / Acara
+- Personal / Pribadi
+- Work / Pekerjaan
+- Other / Lainnya
+
+Kategori Pantry dapat mencakup:
+- All / Semua
+- Expiring Soon / Segera Kedaluwarsa
+- Expired / Kedaluwarsa
+- Fresh / Masih Aman
+- Consumed / Dikonsumsi
+- Discarded / Dibuang
+- Kategori jenis makanan bila tersedia dalam data, misalnya Dairy, Meat, Vegetables, Fruits, Drinks,
+  dan Other.
+
+Catatan implementasi:
+- Kategori status dan kategori jenis makanan berbeda makna. Jika keduanya dibutuhkan, pertimbangkan
+  filter terpisah atau opsi filter yang jelas agar tidak membingungkan pengguna.
+- Filter "Expiring Soon", "Expired", dan "Fresh" harus dihitung dari expirationDate dan status item
+  saat ini; jangan menyimpan hasil status yang bisa menjadi usang tanpa mekanisme pembaruan.
+- Jika memakai LazyRow di Jetpack Compose, chips harus tetap horizontal dan tidak wrap ke baris
+  baru.
+- Gunakan state yang konsisten agar filter terpilih, hasil daftar, hitungan item, dan selection mode
+  tidak bertentangan.
+- Jika pengguna sedang berada dalam mode multi-select lalu mengganti filter, jangan menghapus
+  pilihan diam-diam. Pertahankan pilihan secara konsisten atau beri perilaku yang jelas dan mudah
+  dipahami. "Select All" harus mempunyai cakupan yang eksplisit, misalnya semua item yang terlihat
+  pada filter aktif.
+
+============================================================
+UPDATE 6 — MODEL DATA DAN MIGRASI
+============================================================
+
+Sesuaikan model data yang sudah ada tanpa merusak data pengguna.
+
+Tambahkan atau sesuaikan field yang dibutuhkan, misalnya:
+- Notes: noteType, tags, showOnCalendar, reminderEnabled, deadlineAt, reminderConfiguration,
+  createdAt, updatedAt.
+- Calendar: referensi ke sourceType dan sourceId agar event yang berasal dari note atau pantry item
+  tidak menjadi salinan data terpisah.
+- Expenses: pastikan tanggal transaksi dapat dikelompokkan secara benar per bulan untuk grafik.
+- Pantry: expirationDate, category bila ada, status, serta field tanggal yang dibutuhkan.
+- Reminders: sourceType, sourceId, scheduledAt, status, dan ID notifikasi yang stabil.
+
+Field contoh di atas harus disesuaikan dengan model, naming convention, dan struktur project aktual.
+Jangan membuat field duplikat yang bertentangan dengan data model yang ada.
+
+Jika menggunakan Room, buat migration yang sesuai untuk database yang telah ada. Jangan
+menyelesaikan perubahan schema dengan menghapus database pengguna atau memakai destructive migration
+pada data penting. Jika Cloud Firestore digunakan, perbarui validasi serta security rules yang
+relevan.
+
+============================================================
+UPDATE 7 — TESTING DAN DEFINITION OF DONE UNTUK UPDATE INI
+============================================================
+
+Update dianggap selesai jika:
+
+- App launch tetap menampilkan Home; modul Notes membuka subhalaman Calendar sebagai tampilan awal.
+- Calendar mendukung navigasi bulan dan tahun sebelumnya/berikutnya.
+- Pengguna dapat memilih langsung bulan dan tahun tertentu serta kembali ke Today.
+- Notes memiliki tipe/label dan opsi terpisah untuk tampil di kalender dan mengaktifkan pengingat.
+- Note Only tidak muncul di kalender secara otomatis, namun memiliki timestamp dan dapat dicari
+  berdasarkan tanggal.
+- Reminder catatan mendukung pilihan waktu sebelumnya dan custom sesuai kemampuan yang ditetapkan.
+- Penghapusan multi-select berfungsi untuk Notes, Pantry, dan Expenses dengan dialog konfirmasi.
+- Penghapusan item tidak meninggalkan reminder atau referensi kalender yang tidak valid.
+- Monthly bar chart muncul di bawah circular/donut chart dan memakai data pengeluaran sebenarnya.
+- Pantry Expiring Soon muncul di bawah bar chart, diurutkan berdasarkan tanggal kedaluwarsa.
+- Notes dan Pantry memakai horizontal scrollable filter chips satu baris dengan single selection.
+- Memilih chip memperbarui daftar yang ditampilkan dan tidak mengubah data sumber.
+- Semua perubahan tetap kompatibel dengan Light/Dark theme, English/Indonesian, permission handling,
+  dan notification preferences pada README utama.
+- Tidak ada fitur lama yang dihapus atau diubah tanpa alasan teknis yang dijelaskan.
+- Tambahkan atau perbarui unit test dan UI test untuk logika kalender, filter kategori, bulk
+  selection, pengelompokan expense per bulan, status expiration, serta sinkronisasi reminder.
+
+============================================================
+UPDATE 8 — APP LAUNCHER ICON MENGGUNAKAN LOGO YANG SUDAH DIBERIKAN
+============================================================
+
+- Gunakan file gambar logo NOEXDATE yang sudah diberikan pengguna/tersedia di project.
+- Jangan membuat logo baru, mengganti konsep logo, atau memakai ikon placeholder jika logo sumber
+  sudah tersedia.
+- Periksa folder assets/res/mipmap/drawable atau lokasi asset project yang sebenarnya untuk
+  menemukan file logo tersebut. Jika belum ada di project, jelaskan bahwa file logo asli harus
+  disalin ke project sebelum membuat launcher icon; jangan mengaku sudah menggunakannya jika file
+  tidak ditemukan.
+- Siapkan launcher icon Android melalui Image Asset Studio atau resource adaptive icon yang sesuai.
+- Buat foreground/background adaptive icon dengan tetap menjaga logo asli, proporsi, keterbacaan,
+  serta safe area Android launcher. Jangan memotong bagian penting logo.
+- Atur manifest/resource agar icon tampil pada launcher HP setelah aplikasi di-install.
+- Periksa ikon pada latar terang/gelap dan ukuran ikon berbeda jika memungkinkan.
+
+Acceptance criteria:
+- Ikon aplikasi yang tampil di launcher Android menggunakan logo asli yang diberikan pengguna.
+- Tidak tersisa icon placeholder default Android/Compose.
+
+============================================================
+UPDATE 9 — LIGHT/DARK THEME DAN BAHASA HARUS BENAR-BENAR BERFUNGSI
+============================================================
+
+Tema:
+- Kontrol Light/Dark yang sudah direncanakan di Home harus benar-benar mengubah tema seluruh aplikasi,
+  bukan hanya mengganti warna tombol atau satu layar.
+- Sediakan pengaturan tema yang konsisten dan dapat diakses dari Settings. Jika kontrol di Home tetap
+  ditampilkan, kontrol itu harus terhubung ke sumber preferensi tema yang sama.
+- Pertahankan pilihan System Default bila sudah direncanakan; pilihan manual Light dan Dark tetap wajib.
+- Terapkan perubahan ke semua halaman, dialog, bottom sheet, navigation bar, form, chart, filter chip,
+  calendar, gambar latar, empty state, dan komponen Material 3.
+- Simpan preferensi menggunakan DataStore Preferences atau mekanisme persisten yang sesuai dengan
+  arsitektur project.
+- Setelah aplikasi ditutup dan dibuka lagi, tema pilihan pengguna harus tetap aktif.
+
+Bahasa:
+- Tambahkan pengaturan bahasa di Settings untuk English dan Bahasa Indonesia.
+- Perubahan bahasa harus berlaku di seluruh aplikasi, termasuk Home, Notes, Calendar, Expenses,
+  Pantry, Notification Settings, dialog konfirmasi, error, empty state, form validation, kategori,
+  tanggal, teks reminder, dan notifikasi yang dijadwalkan ulang.
+- Gunakan resource localization Android (misalnya values/strings.xml dan values-id/strings.xml),
+  bukan teks UI penting yang di-hardcode langsung di composable.
+- Simpan bahasa pilihan pengguna agar tetap sama ketika aplikasi dibuka ulang.
+- Terapkan pergantian bahasa segera atau gunakan alur refresh/recreate Activity yang aman dan jelas.
+- Gunakan locale yang sesuai untuk format tanggal, angka, serta mata uang; pilihan bahasa dan pilihan
+  mata uang tetap merupakan pengaturan yang berbeda.
+
+Acceptance criteria:
+- Toggle Light/Dark di Home (jika ditampilkan) dan pengaturan Theme di Settings selalu sinkron.
+- Mengubah tema mengubah semua layar dan tersimpan setelah app restart.
+- Memilih English atau Indonesian di Settings menerjemahkan semua UI yang relevan dan preferensi
+  tersimpan setelah app restart.
+- Tidak ada teks utama yang tetap dalam bahasa lama karena hardcoded string.
+
+============================================================
+UPDATE 10 — FOTO DI DALAM CATATAN: SIMPAN DAN TAMPILKAN PREVIEW
+============================================================
+
+- Pengguna dapat mengambil foto melalui kamera atau memilih foto yang sudah ada dari galeri/photo
+  picker saat membuat atau mengedit catatan.
+- Foto dilampirkan ke catatan tersebut; tidak perlu membuat album baru atau menambahkan salinan ke
+  galeri publik pengguna.
+- Pastikan foto tetap dapat dibuka setelah layar ditutup atau aplikasi dijalankan ulang. Jangan hanya
+  menyimpan bitmap sementara, cache yang mudah hilang, atau URI sementara tanpa izin akses permanen.
+- Pilih strategi penyimpanan yang aman dan konsisten: misalnya salin file terpilih ke app-specific
+  internal storage lalu simpan relative path/identifier di database, atau simpan URI dengan persistable
+  permission bila sumber dan API mendukungnya. Dokumentasikan strategi yang dipakai.
+- Simpan referensi foto pada record note di Room (dan sinkronkan melalui penyimpanan cloud jika
+  sinkronisasi Firebase memang digunakan dalam project).
+- Di halaman detail catatan, tampilkan thumbnail/preview. Saat foto ditekan, buka preview lebih besar
+  atau viewer dengan zoom dan navigasi jika ada beberapa foto.
+- Sediakan cara mengganti atau menghapus lampiran. Hapus file lokal hanya jika tidak lagi dipakai oleh
+  catatan lain dan proses penghapusan catatan berhasil sesuai kebijakan penyimpanan.
+- Tangani foto yang hilang, format tidak didukung, file terlalu besar, izin ditolak, atau storage penuh
+  dengan pesan yang jelas.
+- Jangan mengklaim fitur attachment selesai jika aplikasi hanya menyimpan nama file tanpa kemampuan
+  menampilkan kembali gambarnya.
+
+Acceptance criteria:
+- Foto dapat ditambahkan ke catatan dari kamera maupun galeri.
+- Foto bisa dipratinjau dari detail catatan dan tetap tersedia setelah app ditutup/dibuka lagi.
+- Foto tidak perlu muncul sebagai album baru di galeri publik.
+
+============================================================
+UPDATE 11 — PANTRY SCANNER: PEMBACAAN REAL-TIME DAN GALERI
+============================================================
+
+Sediakan dua metode scan yang bisa dipilih pengguna:
+
+A. Real-time camera scan:
+- Gunakan CameraX untuk menampilkan preview kamera langsung.
+- Analisis frame kamera dengan Google ML Kit Text Recognition untuk mendeteksi teks saat kamera
+  diarahkan ke label produk.
+- Proses frame dengan throttling/strategi yang efisien agar tidak memproses semua frame berlebihan,
+  tidak menghambat preview, dan tidak membebani baterai secara tidak perlu.
+- Tampilkan indikasi teks/tanggal kandidat yang terdeteksi secara real-time bila layak.
+- Berikan panduan agar pengguna mengarahkan label ke area scan dan pencahayaan cukup.
+- Pengguna tetap harus dapat menekan tombol konfirmasi atau mengambil foto untuk memeriksa hasil
+  dengan lebih stabil; jangan otomatis menyimpan tanggal kedaluwarsa yang belum dikonfirmasi.
+
+B. Scan from Gallery:
+- Sediakan tombol untuk memilih gambar dari gallery atau Android Photo Picker.
+- Jalankan ML Kit Text Recognition pada gambar terpilih.
+- Tampilkan teks yang dikenali dan kandidat nama/tanggal untuk ditinjau.
+
+Keduanya harus menggunakan alur hasil yang sama:
+1. Kenali teks dengan ML Kit.
+2. Cari kandidat nama produk dan tanggal yang mungkin merupakan expiry/best-before date.
+3. Bedakan tanggal produksi, tanggal pengemasan, batch code, dan tanggal kedaluwarsa sejauh dapat
+   dilakukan; OCR tidak menjamin arti suatu tanggal.
+4. Tampilkan nama produk dan tanggal yang disarankan agar dapat diedit.
+5. Minta konfirmasi pengguna untuk hasil yang ambigu atau berkeyakinan rendah.
+6. Simpan hanya setelah pengguna mengonfirmasi.
+7. Setelah tersimpan, update Pantry, kalender internal, dan reminder sesuai pengaturan notifikasi.
+
+Tangani izin kamera yang ditolak, kamera tidak tersedia, gambar buram, OCR gagal, offline, atau tanggal
+ambigu dengan fallback manual input. Tutup kamera dan lepaskan resource dengan benar ketika layar
+scanner ditinggalkan.
+
+Acceptance criteria:
+- Scanner memiliki mode real-time camera dan mode pilih foto dari galeri.
+- Kedua mode mampu menjalankan OCR dan mengirim hasil ke layar review/edit.
+- Tidak ada item yang disimpan berdasarkan tebakan OCR tanpa konfirmasi pengguna.
+
+============================================================
+UPDATE 12 — RECURRING / PENGINGAT BERULANG
+============================================================
+
+Tambahkan opsi pengulangan reminder. Pengingat dapat diulang sesuai jadwal yang dipilih pengguna,
+contohnya pada tanggal dan waktu yang sama setiap bulan.
+
+Frekuensi yang didukung sekurang-kurangnya:
+- Tidak berulang / Does not repeat
+- Setiap hari
+- Setiap minggu
+- Setiap bulan pada tanggal yang sama
+- Setiap tahun
+- Custom interval jika sesuai dengan desain dan struktur data
+
+Pengaturan pengulangan harus tersedia pada form Reminder dan pada item yang memang mendukung reminder
+(misalnya Task, Deadline, event, atau item lain sesuai model yang telah ada). Untuk Pantry, pengulangan
+setelah tanggal kedaluwarsa tidak boleh otomatis aktif; hanya jalankan pengulangan setelah kedaluwarsa
+jika pengguna secara eksplisit memilihnya.
+
+Opsi konfigurasi:
+- Tanggal/waktu pertama.
+- Pola pengulangan.
+- Waktu pengingat.
+- Berakhir: Never, pada tanggal tertentu, atau setelah sejumlah pengulangan bila didukung.
+- Edit pengulangan.
+- Pause/resume bila relevan.
+- Stop repeating / Matikan pengulangan.
+- Ubah menjadi Does not repeat.
+- Hapus reminder atau seluruh seri dengan konfirmasi.
+
+Perilaku edit:
+- Jelaskan apakah perubahan berlaku hanya untuk pengingat/kejadian ini atau semua pengulangan ke
+  depan jika model seri digunakan.
+- Saat pengulangan dimatikan, batalkan semua occurrence mendatang yang terkait, tetapi jangan menghapus
+  isi catatan atau item sumbernya.
+- Saat waktu, pola, tanggal, status selesai, atau preference berubah, batalkan jadwal lama dan susun
+  ulang jadwal yang masih valid.
+- Hindari duplikasi saat aplikasi memulai ulang atau sinkronisasi dijalankan lebih dari sekali.
+- Jangan mengirim reminder yang sudah lewat atau stale setelah tanggal sumber diubah.
+- Hormati master notification switch, toggle kategori, pengaturan per-item, quiet hours, dan permission
+  Android. Pengulangan tidak boleh melewati preference pengguna.
+- Untuk pengulangan tanggal 29, 30, atau 31 saat bulan tujuan tidak memiliki tanggal tersebut, gunakan
+  aturan yang konsisten dan dokumentasikan. Default yang disarankan: jatuh pada hari terakhir bulan
+  tersebut; jangan diam-diam menggeser ke bulan berikutnya.
+
+Implementasi Android:
+- Gunakan scheduler yang sesuai dengan kebutuhan waktu dan batasan versi Android. WorkManager cocok
+  untuk pekerjaan yang dapat ditunda dan tidak menjamin eksekusi tepat pada menit tertentu; gunakan
+  mekanisme alarm yang sesuai jika reminder perlu waktu presisi, sesuai izin dan batasan Android.
+- Simpan recurrence rule, timezone, occurrence berikutnya, serta ID stabil pada data reminder agar
+  reminder dapat dijadwalkan ulang dengan aman.
+- Tentukan tanggung jawab antara local notification dan FCM agar satu occurrence tidak dikirim dua
+  kali.
+- Dokumentasikan pembatasan battery optimization, exact alarm permission, force-stop, dan kondisi
+  perangkat/offline yang dapat memengaruhi pengiriman.
+
+Acceptance criteria:
+- Pengguna dapat mengatur reminder bulanan pada tanggal/waktu yang sama.
+- Pengguna dapat mengedit atau menghentikan pengulangan dan menghentikan semua occurrence mendatang.
+- Mengubah atau menonaktifkan pengulangan tidak menghapus isi note/event/pantry item sumber.
+- Tidak ada duplicate reminder atau reminder stale setelah perubahan.
+
+============================================================
+UPDATE 13 — PISAHKAN CATATAN BIASA, TASK, DAN REMINDER
+============================================================
+
+Jangan menyamakan semua item Notes sebagai reminder. Pada layar create/edit, jelaskan perbedaan fungsi:
+
+1. Note Only / Catatan Biasa:
+   - Untuk tulisan, ide, referensi, atau informasi yang tidak memerlukan tindakan.
+   - Punya createdAt dan updatedAt agar tetap bisa dicari berdasarkan waktu dibuat/diubah.
+   - Secara default tidak muncul di Calendar dan tidak membuat notifikasi.
+   - Tidak memerlukan tanggal deadline.
+
+2. Task / Deadline:
+   - Untuk sesuatu yang perlu dikerjakan atau diselesaikan.
+   - Dapat mempunyai due date, status selesai, prioritas, reminder, dan opsi tampil di Calendar.
+   - Reminder dan kalender dapat diaktifkan/dinonaktifkan secara terpisah.
+
+3. Reminder:
+   - Untuk kebutuhan mengingatkan pengguna pada tanggal/waktu tertentu.
+   - Mendukung opsi pengulangan dari UPDATE 12 jika diaktifkan.
+   - Tidak wajib muncul di Calendar kecuali pengguna menyalakan "Show on Calendar".
+
+4. Event / Acara:
+   - Untuk kegiatan yang memiliki tanggal/waktu mulai dan bila perlu waktu selesai.
+   - Ditampilkan di Calendar jika disimpan sebagai event.
+   - Reminder tetap mengikuti preference notifikasi global dan kategori.
+
+Kategori seperti Personal, Work, Shopping, Health, atau Other adalah label/category tambahan, bukan
+pengganti tipe fungsi di atas. Pengguna dapat memilih tipe utama dan menambahkan label/tag terpisah.
+
+Kontrol harus mudah dipahami:
+- "Show on Calendar" menentukan apakah item ditampilkan di kalender.
+- "Enable Reminder" menentukan apakah item memiliki pengingat terjadwal.
+- Notification Settings menentukan apakah kategori tersebut boleh mengirim notifikasi ke HP.
+- Created/updated timestamp tetap tersedia untuk semua catatan biasa meski tidak punya reminder.
+
+Jangan otomatis mengaktifkan kalender atau notifikasi hanya karena pengguna memilih kategori/tag.
+Jangan mengubah Note Only menjadi Task tanpa tindakan eksplisit dari pengguna.
+
+Acceptance criteria:
+- Catatan biasa tetap menjadi catatan biasa dan tidak otomatis masuk Calendar atau notifikasi.
+- Task/Deadline dan Reminder memiliki field perilaku yang sesuai.
+- Pengguna bisa membuat reminder tanpa menampilkan item di kalender, atau menampilkan item di kalender
+  tanpa mengaktifkan notifikasi, selama pengaturan kategori mengizinkan.
+- Pengguna dapat memfilter tipe Notes tanpa tertukar dengan label/category.
+
+============================================================
+UPDATE 14 — VOICE-TO-TEXT DI EDITOR CATATAN (BOLEH DI FASE AKHIR)
+============================================================
+
+Fitur voice-to-text tetap menjadi requirement aplikasi, meskipun implementasinya boleh ditempatkan di
+fase akhir setelah Notes, Calendar, dan penyimpanan foto stabil.
+
+- Tambahkan tombol microphone di note editor.
+- Gunakan Android SpeechRecognizer atau solusi speech-to-text yang dipilih dalam README utama.
+- Sediakan pilihan bahasa Indonesian dan English bila didukung oleh engine yang digunakan.
+- Tampilkan status listening/processing dan hasil transkripsi sebagai teks biasa yang dapat diedit.
+- Pengguna bisa memilih menambahkan hasil di posisi cursor atau mengganti teks yang dipilih; jangan
+  otomatis menimpa seluruh isi note tanpa tindakan yang jelas.
+- Jika engine tidak tersedia, izin mikrofon ditolak, atau layanan tidak tersedia, berikan pesan yang
+  mudah dipahami dan jangan menghapus teks yang sudah ada.
+- Minta izin mikrofon saat fitur pertama kali digunakan, dengan alasan yang jelas.
+- Jelaskan jika pengenalan suara membutuhkan internet atau memproses audio melalui layanan pihak ketiga.
+
+Jangan menghapus requirement ini hanya karena implementasinya direncanakan belakangan.
+
+============================================================
+UPDATE 15 — MIGRASI, INTEGRASI, DAN REGRESSION TEST
+============================================================
+
+- Pertahankan semua fitur dari README utama dan seluruh update sebelumnya, kecuali bagian yang secara
+  eksplisit dikoreksi oleh dokumen ini.
+- Koreksi halaman default pada UPDATE 1 menggantikan instruksi lama yang meminta Calendar menjadi
+  halaman awal aplikasi: app launch = Home, sedangkan modul Notes membuka Calendar subview terlebih
+  dahulu.
+- Gunakan pola arsitektur, dependency, dan naming convention yang sudah ada di project Android Studio.
+- Jika menggunakan Room, buat migration untuk field baru dan uji migrasi dari database versi lama.
+  Jangan memakai destructive migration untuk data pengguna penting.
+- Jika memakai DataStore, pastikan preferensi tema/bahasa tetap terbaca setelah update aplikasi.
+- Pastikan recurring reminders, master/category notification toggles, dan item-level settings bekerja
+  bersama tanpa konflik.
+- Bulk delete pada Notes, Pantry, dan Expenses tetap wajib; penghapusan harus membatalkan reminders
+  serta membersihkan referensi/foto terkait dengan aman.
+- Tambahkan unit/UI tests sesuai kemungkinan project untuk: navigasi Home vs Notes Calendar, theme dan
+  language persistence, photo persistence/preview, real-time OCR dan gallery OCR fallback, recurrence
+  rules, stopping/editing series, notification preference gating, Note Only isolation, dan migration.
+- Jangan mengklaim fitur, konfigurasi, atau pengujian selesai jika belum benar-benar dikerjakan.
+
+AKHIR INSTRUKSI
+Terapkan update ini ke project NOEXDATE yang sudah ada. Sebelum mengedit, periksa file dan
+arsitektur aktual. Setelah selesai, rangkum file yang berubah, jelaskan implementasi setiap update,
+sebutkan migration atau konfigurasi yang diperlukan, dan laporkan pengujian yang benar-benar
+dijalankan. Jangan mengklaim pengujian berhasil jika belum dijalankan.

@@ -1,0 +1,164 @@
+﻿NOEXDATE — README UPDATE TAMBAHAN
+Android Native | Android Studio | Kotlin | Jetpack Compose
+Dokumen ini berisi update tambahan saja. Gunakan bersama README utama dan file update NOEXDATE sebelumnya.
+Jangan mengganti atau menghapus fitur yang sudah ditentukan sebelumnya.
+
+1. PENYESUAIAN DESAIN: ROUNDED SURFACES TANPA GARIS TEPI
+- Komponen rounded seperti card, container, panel, dan section pada umumnya tidak perlu menampilkan garis tepi/border yang terlihat.
+- Gunakan warna surface yang menyatu atau sangat dekat dengan background utama.
+- Gunakan perbedaan tonal, spacing, dan elevation yang halus untuk membedakan area, bukan outline mencolok.
+- Jangan menampilkan garis kotak di sekeliling setiap komponen.
+- Pengecualian: tampilan List dan Pantry boleh tetap menggunakan pembatas atau garis visual jika membantu keterbacaan dan pemisahan item.
+- Pertahankan konsistensi Material 3, radius sudut, padding, dan hierarki visual.
+- Pastikan desain jelas pada Light Mode maupun Dark Mode.
+- Jangan menghilangkan batas visual yang diperlukan untuk aksesibilitas atau kejelasan input.
+
+2. PERBAIKAN EXPENSE, CIRCLE CHART, DAN BAR GRAPH
+
+A. Circle / Donut Expense Chart
+- Tampilkan legenda kategori pengeluaran pada atau di dekat circle chart.
+- Setiap kategori memiliki warna yang konsisten dengan bagian chart.
+- Tampilkan nama kategori dan jumlah atau persentase pengeluarannya.
+- Pastikan pengguna mengetahui kategori dengan pengeluaran terbesar.
+- Jika kategori terlalu banyak, tampilkan kategori utama dan sediakan cara melihat sisanya.
+- Jangan hanya menampilkan lingkaran tanpa keterangan kategori.
+
+B. Monthly Expense Bar Graph
+- Perbaiki layout grafik batang pengeluaran bulanan.
+- Label bulan tidak boleh tertutup oleh batang grafik, sumbu, atau area chart.
+- Berikan ruang cukup di bagian bawah chart untuk label bulan.
+- Pastikan nilai atau label sumbu dapat dibaca dan tidak saling bertumpuk.
+- Grafik harus terbaca pada ukuran layar HP berbeda.
+- Periksa tampilan pada Light Mode dan Dark Mode.
+
+C. Edit Expense
+- Setiap transaksi yang sudah disimpan harus bisa dibuka dan diedit.
+- Pengguna dapat mengubah nominal, kategori, tanggal, deskripsi, dan informasi lain yang tersedia pada transaksi.
+- Sediakan aksi simpan perubahan dan batal.
+- Setelah berhasil diedit, perbarui riwayat transaksi, total pengeluaran, circle chart, dan monthly bar graph secara otomatis.
+- Validasi input dan tampilkan pesan jika data tidak valid.
+- Jangan membuat transaksi duplikat ketika pengguna mengedit transaksi yang sudah ada.
+
+D. Format Angka Otomatis
+- Saat pengguna memasukkan nominal expense, format angka secara otomatis agar mudah dibaca.
+- Untuk format Indonesia gunakan titik sebagai pemisah ribuan, misalnya 1000 menjadi 1.000; 25000 menjadi 25.000; 150000 menjadi 150.000; 2500000 menjadi 2.500.000.
+- Untuk bahasa English, gunakan format angka sesuai locale, misalnya pemisah ribuan koma.
+- Format harus tetap benar saat pengguna mengetik, menghapus, atau mengedit angka di tengah nominal.
+- Jangan sampai pemformatan mengubah nilai transaksi atau membuat angka tersimpan salah.
+- Simpan nominal sebagai nilai numerik yang aman untuk perhitungan, bukan teks berformat.
+- Tampilkan mata uang sesuai pengaturan aplikasi.
+- Berikan contoh format atau petunjuk pada input jika diperlukan.
+
+3. PEMERIKSAAN NOTIFICATION DAN STATUS AKSI
+
+A. Pastikan Notification Benar-Benar Berfungsi di HP
+- Periksa permission notifikasi Android, terutama pada versi Android yang mewajibkannya.
+- Periksa notification channel yang sesuai untuk setiap jenis notifikasi.
+- Periksa pembuatan dan penjadwalan local notification.
+- Periksa FCM dan konfigurasi perangkat/server jika push notification jarak jauh digunakan.
+- Periksa konfigurasi Firebase dan token perangkat bila FCM digunakan.
+- Pastikan reminder dijadwalkan ulang setelah tanggal atau waktu diubah.
+- Batalkan notifikasi ketika reminder dimatikan, item dihapus, atau item tidak lagi perlu diingatkan.
+- Cegah notifikasi ganda.
+- Periksa penjadwalan ulang setelah perangkat restart dan batasan background Android sesuai kemampuan platform.
+- Uji pada perangkat Android fisik, bukan hanya preview UI atau emulator.
+- Jangan menyatakan notifikasi berhasil jika hanya jadwal internal yang tersimpan tetapi notifikasi tidak dapat diterima perangkat.
+
+Jika izin notifikasi belum diberikan:
+- Jelaskan bahwa izin diperlukan.
+- Sediakan tindakan untuk membuka pengaturan aplikasi Android bila izin ditolak atau dinonaktifkan.
+- Tetap tampilkan reminder di dalam aplikasi.
+
+B. Status Saat Pengguna Mengubah Setting atau Menekan Switch
+- Setiap aksi penting harus memberikan feedback yang jelas.
+- Contoh: "Theme updated"/"Tema berhasil diubah", "Language updated"/"Bahasa berhasil diubah", "Notification enabled"/"Notifikasi berhasil diaktifkan", dan "Reminder settings saved"/"Pengaturan pengingat berhasil disimpan".
+- Gunakan Snackbar, Toast, inline status, atau komponen feedback Material 3 yang sesuai.
+- Status sukses hanya boleh ditampilkan setelah perubahan benar-benar berhasil disimpan.
+- Jika penyimpanan gagal, kembalikan switch ke status sebelumnya atau tampilkan status yang jelas agar UI tidak memberi kesan perubahan sudah berhasil.
+- Berikan indikator loading untuk proses yang membutuhkan waktu.
+- Hindari pesan sukses berulang secara berlebihan.
+- Pastikan seluruh pesan feedback mendukung English dan Indonesian.
+- Terapkan feedback serupa pada aksi simpan, edit, hapus, dan perubahan penting lainnya.
+
+4. KEMBALIKAN SEARCH BAR
+
+A. Notes
+- Tambahkan search bar untuk mencari catatan.
+- Pencarian dapat mencakup judul dan isi catatan, serta metadata relevan seperti kategori atau label jika didukung.
+- Pencarian tetap bekerja saat pengguna berpindah antara tampilan Calendar dan List.
+- Jangan menghilangkan filter chips horizontal yang sudah ditentukan sebelumnya.
+
+B. Expenses
+- Tambahkan search bar untuk mencari transaksi pengeluaran.
+- Pengguna dapat mencari berdasarkan deskripsi atau nama merchant, dan kategori jika didukung.
+- Pencarian harus bekerja bersama filter kategori dan filter tanggal.
+
+C. Pantry
+- Tambahkan search bar untuk mencari nama makanan atau item pantry.
+- Pencarian harus bekerja bersama filter chips horizontal dan status kedaluwarsa.
+
+Ketentuan umum:
+- Search bar harus terlihat jelas dan mudah ditemukan.
+- Sediakan tombol clear untuk menghapus kata pencarian.
+- Tampilkan empty state jika tidak ada hasil.
+- Perbarui hasil pencarian sesuai input tanpa membuat halaman lambat.
+- Pastikan placeholder dan accessibility label diterjemahkan ke English dan Indonesian.
+
+5. LIGHT MODE DAN DARK MODE
+- Pastikan aplikasi benar-benar mendukung Light Mode dan Dark Mode.
+- Sediakan pilihan Light dan Dark di halaman Settings.
+- Jika sudah ada switch tema di halaman Home, pastikan switch benar-benar berfungsi dan terhubung ke pengaturan tema global.
+- Pilihan tema berlaku untuk seluruh aplikasi, bukan hanya halaman tertentu.
+- Simpan pilihan pengguna agar tetap berlaku setelah aplikasi ditutup dan dibuka kembali.
+- Jika tersedia pilihan System Default, pilihan tersebut harus mengikuti tema sistem Android.
+- Periksa warna background, surface, teks, ikon, chart, filter chips, dialog, snackbar, input, dan navigasi pada kedua tema.
+- Pastikan kontras dan keterbacaan tetap baik.
+- Jangan membuat komponen tertentu tetap menggunakan warna Light Mode ketika Dark Mode aktif.
+
+6. HANDLER UNTUK FITUR YANG BELUM TERSEDIA
+- Jika ada tombol, menu, atau fungsi yang belum selesai dibuat, jangan biarkan tombol tidak bereaksi atau seolah-olah berfungsi.
+- Untuk fitur yang memang belum tersedia, arahkan pengguna ke halaman atau tampilan "Coming Soon".
+- Jelaskan secara singkat bahwa fitur tersebut belum tersedia dan sedang direncanakan.
+- Sediakan tombol kembali atau navigasi kembali yang berfungsi.
+- Gunakan desain dan bahasa yang konsisten dengan NOEXDATE.
+- Terjemahkan tampilan Coming Soon ke English dan Indonesian.
+- Jangan menampilkan Coming Soon untuk fitur yang sebenarnya sudah selesai dan berfungsi.
+- Jangan menggunakan Coming Soon sebagai pengganti implementasi fitur inti yang sudah diwajibkan dalam README.
+- Untuk aksi yang seharusnya sudah tersedia tetapi gagal karena error, tampilkan pesan error yang sesuai, bukan Coming Soon.
+
+7. CATATAN TAMBAHAN
+Bagian nomor 7 pada daftar permintaan terbaru belum berisi penjelasan fitur. Jangan menambahkan asumsi atau fitur baru berdasarkan nomor tersebut. Pertahankan seluruh spesifikasi dan fitur dari README utama serta update sebelumnya.
+
+8. INSTRUKSI PENERAPAN UPDATE
+Terapkan dokumen ini sebagai update terhadap project NOEXDATE Android native yang sudah ada.
+
+Teknologi utama:
+- Android Studio
+- Kotlin
+- Jetpack Compose
+- Material 3
+
+Instruksi untuk AI coding assistant:
+1. Periksa struktur project dan implementasi yang sudah ada sebelum mengubah kode.
+2. Periksa README utama dan seluruh dokumen update sebelumnya.
+3. Pertahankan fitur yang sudah berfungsi.
+4. Jangan membangun ulang project dari nol.
+5. Jangan menghapus atau mereset data pengguna.
+6. Periksa apakah search bar, edit expense, chart, theme, dan notification sudah ada sebelum membuat implementasi baru.
+7. Perbaiki implementasi yang rusak atau belum lengkap, bukan sekadar menambahkan UI baru.
+8. Pastikan perubahan state disimpan dengan benar dan UI mencerminkan status data sebenarnya.
+9. Tambahkan atau perbarui unit test, UI test, dan pengujian pada perangkat untuk fungsi yang terdampak.
+10. Setelah implementasi, laporkan fitur yang sudah selesai, fitur yang masih Coming Soon, konfigurasi yang masih diperlukan, dan hasil pengujian.
+
+DEFINITION OF DONE
+- Rounded surfaces menyatu dengan background tanpa border mencolok, kecuali pemisahan visual yang diperlukan pada List dan Pantry.
+- Circle chart memiliki keterangan kategori dan jumlah/persentase.
+- Label bulan pada bar graph tidak tertutup.
+- Expense dapat diedit dan seluruh ringkasan diperbarui.
+- Input nominal memiliki pemisah ribuan otomatis sesuai bahasa/locale.
+- Notifikasi diuji pada perangkat Android dan status izin ditangani.
+- Switch dan perubahan setting memberikan feedback sukses atau gagal yang akurat.
+- Search bar tersedia dan berfungsi di Notes, Expenses, dan Pantry.
+- Light/Dark Mode bekerja secara global dan tersimpan.
+- Tombol untuk fitur yang belum tersedia diarahkan ke Coming Soon.
+- Seluruh fitur lama tetap dipertahankan.
